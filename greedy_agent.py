@@ -1,5 +1,5 @@
 from agent import Agent
-
+from dijkstra import dijkstra
 
 class GreedyAgent(Agent):
 
@@ -14,7 +14,7 @@ class GreedyAgent(Agent):
         if self.greedy_path is []:
             graph = state.graph
             location = state.locations[self.id]
-            self.compute_greedy_path(graph, location)
+            self.greedy_path = dijkstra(graph, location)
         action = self.greedy_path[0]
         # TODO adapt this to match the representation of path via graphix
         self.greedy_path = self.greedy_path[1:]
@@ -22,5 +22,3 @@ class GreedyAgent(Agent):
         return action
 
 
-    def compute_greedy_path(self, graph, location):
-        return None

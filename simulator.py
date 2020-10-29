@@ -20,7 +20,7 @@ class Simulator:
                 initial_location = input("enter vertex id for initial agent location")
                 locations.append(int(initial_location))
         self.generate_initial_state(graph, locations)
-        self.rewards = [0]*num_agents
+        self.rewards = [0] * num_agents
 
     def generate_initial_state(self, graph, locations):
         self.state = State(graph, locations)
@@ -43,8 +43,14 @@ class Simulator:
 
     def update_state(self, agent, action):
         self.state.advance_time()
-        if action is None or "terminated":
+        if action is None:
             return None
+        if action is "terminated":
+            # Calculate if your final move rescued any people. Handles the edge case where you
+            # are unfrozen and the game ends
+            final_reward = self.state.locations[agent.id].value
+            self.rewards[agent.id] += final_reward
+            self.state.people_remaining -= final_reward
         # I'm assuming that move actions are represented as a tuple of vertices and weight [origin, destination, weight]
         # TODO make sure this complies with the representation of graphix
         self.state.locations[agent.id] = action[1]
