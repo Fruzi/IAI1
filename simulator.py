@@ -47,7 +47,6 @@ class Simulator:
         # I'm assuming that move actions are represented as a tuple of vertices and weight [origin, destination, weight]
         self.state.locations[agent.id] = action[1]
 
-
     def terminated(self):
         # Check if time limit has passed
         if self.state.time > self.time_limit:
