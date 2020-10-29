@@ -20,6 +20,7 @@ class Simulator:
                 initial_location = input("enter vertex id for initial agent location")
                 locations.append(int(initial_location))
         self.generate_initial_state(graph, locations)
+        self.rewards = [0]*num_agents
 
     def generate_initial_state(self, graph, locations):
         self.state = State(graph, locations)
@@ -45,24 +46,26 @@ class Simulator:
         if action is None or "terminated":
             return None
         # I'm assuming that move actions are represented as a tuple of vertices and weight [origin, destination, weight]
+        # TODO make sure this complies with the representation of graphix
         self.state.locations[agent.id] = action[1]
+        # Update the agent's reward
+        self.rewards[agent.id] += action[0].value
+        # Update the number of people remaining in the graph
+        self.state.people_remaining -= action[0].value
 
     def terminated(self):
         # Check if time limit has passed
         if self.state.time > self.time_limit:
             return True
         # Check if there are no more people to rescue
-        people_remaining = 0
-        # for vertex in self.state.graph
-        #       people_remiaing += vertex.value
-        if people_remaining == 0:
+        if self.state.people_remaining == 0:
             return True
         # Check if all agents terminated
         all_done = True
         for agent in self.agents:
             if not agent.terminated():
                 all_done = False
-                break;
+                break
         if all_done:
             return True
         # No termination condition was found
