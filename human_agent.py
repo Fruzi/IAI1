@@ -1,8 +1,7 @@
-class HumanAgent:
+from agent import Agent
 
-    def observe(self, state):
-        return state
+
+class HumanAgent(Agent):
 
     def act(self, observation):
         self.print_observation(observation)
-

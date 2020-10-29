@@ -1,6 +1,7 @@
-class SaboteurAgent:
+from agent import Agent
 
-    def observe(self, state):
-        return state
+
+class SaboteurAgent(Agent):
+
 
     def act(self, state):
