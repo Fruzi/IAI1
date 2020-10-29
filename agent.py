@@ -1,8 +1,9 @@
 class Agent:
 
-    def __init__(self):
+    def __init__(self, id):
         self.terminated = False
         self.frozen_time_remaining = 0
+        self.id = id
 
     def act(self, observation):
         return None

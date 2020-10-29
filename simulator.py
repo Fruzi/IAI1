@@ -10,18 +10,19 @@ class Simulator:
     def __init__(self, graph, time_limit):
         self.time_limit = time_limit
         self.agents = []
+        self.state = None
         num_agents = input("Enter number of agents")
         locations = []
         for i in range(0, int(num_agents)):
             agent_name = input("enter name of agent number {}".format(i))
             if agent_name in self.AGENTS:
-                self.agents.append(self.AGENTS[agent_name]())
+                self.agents.append(self.AGENTS[agent_name](i))
                 initial_location = input("enter vertex id for initial agent location")
                 locations.append(int(initial_location))
         self.generate_initial_state(graph, locations)
 
     def generate_initial_state(self, graph, locations):
-        return State(graph, locations)
+        self.state = State(graph, locations)
 
     def run_sequential_environment(self):
         while not self.terminated():
@@ -41,15 +42,31 @@ class Simulator:
 
     def update_state(self, agent, action):
         self.state.advance_time()
-        if action is None:
+        if action is None or "terminated":
             return None
-        
+        # I'm assuming that move actions are represented as a tuple of vertices and weight [origin, destination, weight]
+        self.state.locations[agent.id] = action[1]
+
 
     def terminated(self):
+        # Check if time limit has passed
         if self.state.time > self.time_limit:
             return True
-        #     if no more people to rescue:
-        #       return True
+        # Check if there are no more people to rescue
+        people_remaining = 0
+        # for vertex in self.state.graph
+        #       people_remiaing += vertex.value
+        if people_remaining == 0:
+            return True
+        # Check if all agents terminated
+        all_done = True
+        for agent in self.agents:
+            if not agent.terminated():
+                all_done = False
+                break;
+        if all_done:
+            return True
+        # No termination condition was found
         return False
 
     def print_state(self):
