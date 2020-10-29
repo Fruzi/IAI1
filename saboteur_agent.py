@@ -5,3 +5,4 @@ class SaboteurAgent(Agent):
 
 
     def act(self, state):
+        return None

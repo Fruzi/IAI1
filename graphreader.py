@@ -6,7 +6,6 @@ class GraphReader:
         with open(path, 'r') as f:
             next(f)
             deadline = float(self.formatline(f.readline())[1])
-
             graph = nx.Graph()
             reading_vertices = True  # Are we reading vertices or edges
             for line in f:

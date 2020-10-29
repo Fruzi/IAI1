@@ -11,16 +11,18 @@ class Simulator:
         self.time_limit = time_limit
         self.agents = []
         self.state = None
-        num_agents = input("Enter number of agents")
+        print("Using the graph {}".format(graph))
+        num_agents = input("Enter number of agents\n")
         locations = []
         for i in range(0, int(num_agents)):
-            agent_name = input("enter name of agent number {}".format(i))
+            agent_name = input("enter name of agent number {}\n".format(i))
             if agent_name in self.AGENTS:
                 self.agents.append(self.AGENTS[agent_name](i))
-                initial_location = input("enter vertex id for initial agent location")
+                initial_location = input("enter vertex id for initial agent location\n")
                 locations.append(int(initial_location))
         self.generate_initial_state(graph, locations)
-        self.rewards = [0] * num_agents
+        self.rewards = [0] * int(num_agents)
+        self.run_sequential_environment()
 
     def generate_initial_state(self, graph, locations):
         self.state = State(graph, locations)
@@ -69,7 +71,7 @@ class Simulator:
         # Check if all agents terminated
         all_done = True
         for agent in self.agents:
-            if not agent.terminated():
+            if not agent.is_terminated():
                 all_done = False
                 break
         if all_done:
