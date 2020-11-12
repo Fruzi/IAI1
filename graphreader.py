@@ -18,10 +18,11 @@ class GraphReader:
                         else:
                             graph.add_node(vertexid, value=int(line[1][1:]))
                     else:  # Currently reading the edges
+                        edgeid = int(line[0][1:])  # Edge id
                         vertex1id = int(line[1])  # First vertex id
                         vertex2id = int(line[2])  # Second vertex id
                         weight = int(line[3][1:])  # Edge weight
-                        graph.add_edge(vertex1id, vertex2id, weight=weight)
+                        graph.add_edge(vertex1id, vertex2id, eid=edgeid, weight=weight)
                 else:
                     reading_vertices = False
         print(graph)
@@ -32,7 +33,3 @@ class GraphReader:
             return line[1:].split(';')[0].strip().split()  # Remove the comment if there is one and split into the parts
         else:  # The empty line that marks the switch from vertices to edges
             return ''
-
-
-if __name__ == '__main__':
-    GraphReader().read(r"C:\Users\Lior\Desktop\fwefe.txt")

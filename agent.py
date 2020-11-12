@@ -1,11 +1,14 @@
+from state import State
+
+
 class Agent:
-    # When an agent move from vertex v1 to v2 thorough an edge with weight w we imidiatly move it's location to v2
+    # When an agent move from vertex v1 to v2 thorough an edge with weight w we immediately move it's location to v2
     # and freeze him there for w-1 time units.
 
-    def __init__(self, id):
+    def __init__(self, aid):
+        self.aid = aid
         self.terminated = False
-        self.frozen_time_remaining = 0
-        self.id = id
+        self.saver = True  # Does the agent save people
 
     def act(self, observation):
         return None
@@ -19,5 +22,7 @@ class Agent:
     def is_terminated(self):
         return self.terminated
 
-    def print_observation(self, observation):
-        print(observation)
+    def is_moving(self, obseravtion: State):
+        location = obseravtion.locations[self.aid]
+        # If the agent has more than 0 steps, that means he is now moving on an edge
+        return location[2] > 0
