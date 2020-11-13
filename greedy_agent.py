@@ -32,13 +32,13 @@ class GreedyAgent(Agent):
         return action
 
     def get_path(self, graph, source):
-        mininum_length = None
+        minimum_length = None
         chosen_path = None
         for target in graph.nodes(data=True):
             if target[1]['value'] > 0:
                 length, path = single_source_dijkstra(graph, source, target[0])
-                if mininum_length is None or length < mininum_length:
-                    mininum_length = length
+                if minimum_length is None or length < minimum_length:
+                    minimum_length = length
                     chosen_path = path
         print("going to vertex {}".format(chosen_path[-1]))
         return chosen_path[1:]
