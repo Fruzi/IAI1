@@ -1,6 +1,7 @@
 from graphreader import GraphReader
 from human_agent import HumanAgent
 from simulator import Simulator
+from astar_agent import AStarAgent
 from state import State
 
 
@@ -11,6 +12,7 @@ def update(actions, agents, state):
                 savedpeople = state.graph.nodes[state.locations[i][1]]['value']
                 state.graph.nodes[state.locations[i][1]]['value'] = 0
                 state.people_remaining -= savedpeople
+                agents[i].add_people(savedpeople)
 
     # update all moving agents
     for i in range(len(state.locations)):
@@ -49,9 +51,13 @@ def terminate(state):
     return state.is_deadline_reached() or state.people_remaining <= 0 or all(loc[0] == -1 for loc in state.locations)
 
 
+def stupid(a, b):
+    return 0
+
+
 if __name__ == '__main__':
-    graph, deadline = GraphReader().read(r"C:\Users\Lior\Desktop\exampleg.txt")
-    agents_locations = [(0, 0, 0)]
+    graph, deadline = GraphReader().read(r"C:\Users\Uzi\Desktop\exampleg.txt")
+    agents_locations = [(0, 0, 0), (2, 2, 0)]
     state = State(graph, agents_locations)
-    agents = [HumanAgent(0)]
+    agents = [HumanAgent(0), AStarAgent(1, 10000, stupid)]
     Simulator().run_environment(state, update, agents, terminate)

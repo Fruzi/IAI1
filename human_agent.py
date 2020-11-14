@@ -6,6 +6,8 @@ class HumanAgent(Agent):
         location = observation.locations[self.aid]
         if location[2] != 0:
             return ("noop",)
+        print(location)
+        # print(observation.graph[])
         neighbors = observation.graph[location[1]]
         neighbor_nodes = [str(n) for n in neighbors]
         print(f"Human agent {self.aid}, your neighbouring nodes are: {','.join(neighbor_nodes)}")

@@ -3,6 +3,11 @@ class Simulator:
         pass
 
     def run_environment(self, state, updatefn, agents, terminationfn):
+        for agent in agents:
+            print(state.locations[agent.aid][1])
+            if state.graph.nodes(data=True)[state.locations[agent.aid][1]]['value'] > 0:
+                agent.add_people(state.graph.nodes(data=True)[state.locations[agent.aid][1]]['value'])
+                state.graph.nodes(data=True)[state.locations[agent.aid][1]]['value'] = 0
         while True:
             state.print()
             for agent in agents:
