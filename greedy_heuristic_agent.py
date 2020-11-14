@@ -22,12 +22,13 @@ class GreedyHeuristicAgent(Agent):
         next_vertex = None
         cheapest = None
         for neighbor in graph[location]:
-            if graph.nodes(data=True)['value'] > 0 and cheapest is None or neighbor[1]['weight'] < cheapest:
-                next_vertex = neighbor[0]
-                cheapest = neighbor[1]['weight']
+            if graph.nodes(data=True)[neighbor]['value'] > 0 and\
+                    (cheapest is None or graph[location][neighbor]['weight'] < cheapest):
+                next_vertex = neighbor
+                cheapest = graph[location][neighbor]['weight']
         if next_vertex is None:
             for neighbor in graph[location]:
-                if cheapest is None or neighbor[1]['weight'] < cheapest:
+                if cheapest is None or graph[location][neighbor]['weight'] < cheapest:
                     next_vertex = neighbor[0]
                     cheapest = neighbor[1]['weight']
         return next_vertex
