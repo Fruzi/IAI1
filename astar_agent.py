@@ -1,21 +1,39 @@
-import _heapq
 
+import _heapq
 from agent import Agent
 
 MAX = 10000
 
 
 def reconstruct_path(goal, predecessors):
-    ret = [goal]
-    prev = predecessors[goal]
-    while prev is not None:
-        ret = [prev] + ret
-        curr = prev
-        prev = predecessors[curr]
+    location = goal[1]
+    ret = [location]
+    while True:
+        if goal in predecessors:
+            pred = predecessors[goal]
+            ret = [pred[1]] + ret
+            goal = pred
+        else:
+            break
     return ret[1:]
 
 
-class AStarAgent(Agent):
+def is_goal(graph_and_loc):
+    graph = graph_and_loc[0]
+    loc = graph_and_loc[1]
+    for v in graph.nodes(data=True):
+        if v[0] != loc and v[1]['value'] > 0:
+            return False
+    return True
+
+
+def create_new_graph(graph, new_loc):
+    g = graph.copy()
+    g.add_node(new_loc, value=0)
+    return g
+
+
+class AStarAgent2(Agent):
 
     def __init__(self, aid, limit, heuristic=None):
         super().__init__(aid)
@@ -40,45 +58,47 @@ class AStarAgent(Agent):
         self.curr_path = self.curr_path[1:]
         return action
 
+
     def get_path(self, graph, location):
-        g_values = {vertex: MAX for vertex in graph.nodes()}
-        g_values[location] = 0
-        f_values = {vertex: MAX for vertex in graph.nodes()}
-        f_values[location] = self.heuristic(graph, location, 0)
-        added_to_h = {vertex: False for vertex in graph.nodes()}
-        added_to_h[location] = True
-        predecessors = {vertex: None for vertex in graph.nodes()}
-        num_previously_visited = {vertex: 0 for vertex in graph.nodes()}
-        h = [(self.heuristic(graph, location, num_previously_visited[location]), location)]
+        graph_and_loc_next_id = 0
+        graph_and_loc_to_ids = {}
+        ids_to_graph_and_loc = {}
+        g_values = {(graph, location): 0}
+        f_values = {(graph, location): self.heuristic(graph, location)}
+        predecessors = {}
+        graph_and_loc_to_ids[(graph, location)] = graph_and_loc_next_id
+        ids_to_graph_and_loc[graph_and_loc_next_id] = (graph, location)
+        graph_and_loc_next_id += 1
+        h = [(self.heuristic(graph, location), graph_and_loc_to_ids[(graph, location)])]
         _heapq.heapify(h)
+        added_to_h = [(graph, location)]
         num_expansions = 0
         while num_expansions < self.limit:
-            if not h:
-                print(f_values)
-            print(h)
-            smallest = _heapq.heappop(h)
-            smallest = smallest[1]
-            added_to_h[smallest] = False
-            print("heuristic value of vertex {} is {}".format(smallest, self.heuristic(graph, smallest, num_previously_visited[smallest])))
-            if self.heuristic(graph, smallest, num_previously_visited[smallest]) == 0:
-                return reconstruct_path(smallest, predecessors)
+            popped_heuristic_value, popped_graph_and_loc = _heapq.heappop(h)
+            popped_graph_and_loc = ids_to_graph_and_loc[popped_graph_and_loc]
+            added_to_h.remove(popped_graph_and_loc)
+            if is_goal(popped_graph_and_loc):
+                return reconstruct_path(popped_graph_and_loc, predecessors)
             else:
                 num_expansions += 1
-                expansion = graph[smallest]
+                # all neighbors from current loc
+                expansion = graph[popped_graph_and_loc[1]]
                 expansion = list(expansion.items())
                 for neighbor in expansion:
                     neighbor_id = neighbor[0]
-                    new_possible_g = g_values[smallest] + neighbor[1]['weight']
-                    if new_possible_g < g_values[neighbor_id]:
-                        num_previously_visited[neighbor_id] = num_previously_visited[smallest]
-                        if graph.nodes(data=True)[smallest]['value'] > 0:
-                            num_previously_visited[neighbor_id] += 1
-                        g_values[neighbor_id] = new_possible_g
-                        predecessors[neighbor_id] = smallest
-                        f_values[neighbor_id] = new_possible_g + \
-                                                self.heuristic(graph, neighbor, num_previously_visited[neighbor_id])
-                        if not added_to_h[neighbor_id]:
-                            _heapq.heappush(h, (f_values[neighbor[0]], neighbor[0]))
-                            added_to_h[neighbor_id] = True
-
+                    neighbor_weight = neighbor[1]['weight']
+                    new_possible_g = g_values[popped_graph_and_loc] + neighbor_weight
+                    g = create_new_graph(popped_graph_and_loc[0], neighbor_id)
+                    new_graph_and_loc = (g, neighbor_id)
+                    if new_graph_and_loc not in g_values or new_possible_g < g_values[new_graph_and_loc]:
+                        g_values[new_graph_and_loc] = new_possible_g
+                        predecessors[new_graph_and_loc] = popped_graph_and_loc
+                        f_values[new_graph_and_loc] = new_possible_g + \
+                                                self.heuristic(new_graph_and_loc[0], new_graph_and_loc[1])
+                        if new_graph_and_loc not in added_to_h:
+                            graph_and_loc_to_ids[new_graph_and_loc] = graph_and_loc_next_id
+                            ids_to_graph_and_loc[graph_and_loc_next_id] = new_graph_and_loc
+                            graph_and_loc_next_id += 1
+                            _heapq.heappush(h, (f_values[new_graph_and_loc], graph_and_loc_to_ids[new_graph_and_loc]))
+                            added_to_h.append(new_graph_and_loc)
         return "terminate"
