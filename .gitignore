@@ -1,7 +1,6 @@
 # My ignores
 *.iml
 .idea/
-dijkstra.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
