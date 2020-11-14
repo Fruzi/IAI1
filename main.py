@@ -60,5 +60,5 @@ if __name__ == '__main__':
     graph, deadline = GraphReader().read(r"C:\Users\Uzi\Desktop\exampleg.txt")
     agents_locations = [(0, 0, 0), (2, 2, 0)]
     state = State(graph, agents_locations)
-    agents = [HumanAgent(0), GreedyHeuristicAgent(1)]
+    agents = [HumanAgent(0), AStarAgent(1, 10000, stupid)]
     Simulator().run_environment(state, update, agents, terminate)

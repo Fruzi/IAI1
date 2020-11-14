@@ -15,11 +15,10 @@ def reconstruct_path(goal, predecessors):
     return ret[1:]
 
 
-class AStarAgent(Agent):
+class AStarRealtimeAgent(Agent):
 
     def __init__(self, aid, limit, heuristic=None):
         super().__init__(aid)
-        self.curr_path = []
         self.heuristic = heuristic
         self.limit = limit
 
@@ -29,18 +28,15 @@ class AStarAgent(Agent):
         if self.is_moving(observation):  # if traversing on edge, return no-op
             return ("noop",)
         location = observation.locations[self.aid][1]
-        if not self.curr_path:
-            graph = observation.graph
-            self.curr_path = self.get_path(graph, location)
-        if self.curr_path == "terminate":
+        graph = observation.graph
+        next_vertex = self.get_move(graph, location)
+        if next_vertex == "terminate":
             return ("terminate",)
-        next_vertex = self.curr_path[0]
         weight = observation.graph[location][next_vertex]['weight']
         action = ("move", location, next_vertex, weight)
-        self.curr_path = self.curr_path[1:]
         return action
 
-    def get_path(self, graph, location):
+    def get_move(self, graph, location):
         g_values = {edge: MAX for edge in graph.nodes()}
         g_values[location] = 0
         f_values = g_values.copy()
@@ -53,7 +49,7 @@ class AStarAgent(Agent):
         while num_expansions < self.limit:
             smallest = _heapq.heappop(h)[1]
             if self.heuristic(graph, smallest, num_previously_visited[smallest]) == 0:
-                return reconstruct_path(smallest, predecessors)
+                return reconstruct_path(smallest, predecessors)[0]
             else:
                 num_expansions += 1
                 expansion = graph[smallest]
@@ -71,4 +67,4 @@ class AStarAgent(Agent):
                                                 self.heuristic(graph, neighbor, num_previously_visited[neighbor_id])
                         if neighbor_id not in h:
                             _heapq.heappush(h, (f_values[neighbor[0]], neighbor[0]))
-        return "terminate"
+        return reconstruct_path(_heapq.heappop(h), predecessors)[0]

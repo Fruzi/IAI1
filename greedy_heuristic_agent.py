@@ -4,8 +4,9 @@ from networkx.algorithms.shortest_paths.weighted import single_source_dijkstra
 
 class GreedyHeuristicAgent(Agent):
 
-    def __init__(self, aid):
+    def __init__(self, aid, limit):
         super().__init__(aid)
+        self.limit = limit
 
     def act(self, observation):
         if self.terminated:  # If terminated, return no-op
