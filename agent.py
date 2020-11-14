@@ -9,6 +9,7 @@ class Agent:
         self.aid = aid
         self.terminated = False
         self.saver = True  # Does the agent save people
+        self.people_saved = 0
 
     def act(self, observation):
         return None
@@ -26,3 +27,9 @@ class Agent:
         location = obseravtion.locations[self.aid]
         # If the agent has more than 0 steps, that means he is now moving on an edge
         return location[2] > 0
+
+    def add_people(self, people):
+        self.people_saved += people
+
+    def print(self):
+        print(f'Agent {self.aid} saved {self.people_saved} people')

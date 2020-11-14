@@ -18,7 +18,6 @@ class State:
         self.time += time_units
 
     def is_deadline_reached(self):
-        # TODO make sure if it can be equal or not
         return self.deadline != -1 and self.time >= self.deadline
 
     def block_road(self, vertex1id, vertex2id):
@@ -27,6 +26,7 @@ class State:
     def print(self):
         print('-' * 20)
         print(f"Current Time: {self.time}")
+        print(f'{self.people_remaining} people need saving')
         # Print location of every agent
         for i in range(len(self.locations)):
             if self.locations[i][2] == 0:
@@ -34,7 +34,6 @@ class State:
             else:
                 print(
                     f"Agent {i} is at edge {self.locations[i][0]}-{self.locations[i][1]} with {self.locations[i][2]} steps left")
-        print(f"{self.people_remaining} people left to be saved")
         self.draw_graph()
 
     def draw_graph(self):
@@ -49,7 +48,3 @@ class State:
         nx.draw_networkx_edge_labels(self.graph, pos, edgelist)
         nx.draw_networkx_labels(self.graph, pos, font_size=10, font_family="sans-serif")
         plt.show()
-
-    # TODO just for the case that the draw does not work we have it ready
-    def print_graph(self):
-        pass
