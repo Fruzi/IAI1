@@ -41,11 +41,11 @@ class AStarAgent(Agent):
         return action
 
     def get_path(self, graph, location):
-        g_values = {edge: MAX for edge in graph.nodes()}
+        g_values = {vertex: MAX for vertex in graph.nodes()}
         g_values[location] = 0
         f_values = g_values.copy()
-        predecessors = {edge: None for edge in graph.nodes()}
-        num_previously_visited = {edge: 0 for edge in graph.nodes()}
+        predecessors = {vertex: None for vertex in graph.nodes()}
+        num_previously_visited = {vertex: 0 for vertex in graph.nodes()}
         h = list(f_values.items())
         h = [(f_value, vid) for vid, f_value in h]
         _heapq.heapify(h)
@@ -61,7 +61,7 @@ class AStarAgent(Agent):
                 for neighbor in expansion:
                     new_possible_g = g_values[smallest] + neighbor[1]['weight']
                     if new_possible_g < g_values[neighbor[0]]:
-                        num_previously_visited[neighbor] = num_previously_visited[smallest] + 1
+                        num_previously_visited[neighbor] = num_previously_visited[smallest]
                         if graph.nodes(data=True)[smallest] > 0:
                             num_previously_visited[neighbor] += 1
                         neighbor_id = neighbor[0]
