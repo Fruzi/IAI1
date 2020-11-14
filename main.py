@@ -2,6 +2,7 @@ from graphreader import GraphReader
 from human_agent import HumanAgent
 from simulator import Simulator
 from astar_agent import AStarAgent
+from better_astar import AStarAgent2
 from greedy_heuristic_agent import GreedyHeuristicAgent
 from state import State
 
@@ -55,10 +56,16 @@ def terminate(state):
 def stupid(a, b):
     return 0
 
+def num_v_with_people(graph, init):
+    ret = 0
+    for v in list(graph.nodes(data=True)):
+        if v[0] != init and v[1]['value'] > 0:
+            ret += 1
+    return ret
 
 if __name__ == '__main__':
     graph, deadline = GraphReader().read(r"C:\Users\Uzi\Desktop\exampleg.txt")
-    agents_locations = [(0, 0, 0), (2, 2, 0)]
+    agents_locations = [(2, 2, 0)]
     state = State(graph, agents_locations)
-    agents = [HumanAgent(0), AStarAgent(1, 10000, stupid)]
+    agents = [AStarAgent2(0, 10000, num_v_with_people)]
     Simulator().run_environment(state, update, agents, terminate)
